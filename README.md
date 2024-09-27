@@ -6,11 +6,11 @@ How to use:
 
 1. Create a config.py file and fill it with the required information (example)
   1. bot_token = "your_token"
-  2. Get this from BotFather
-  3. group_ids = ["id1", "id2"]
+  3. Get this from BotFather
+  4. group_ids = ["id1", "id2"]
      1. You can get these for example by adding @getidsbot to the chats
      2. But also other ways to obtain this
-  4. forum_url = "https://yourforum.com/"
+  5. forum_url = "https://yourforum.com/"
 
 
 2. Configure the Discourse forum webhook settings
