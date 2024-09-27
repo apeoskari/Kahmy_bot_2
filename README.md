@@ -21,9 +21,10 @@ How to use:
    7. Should be working now
 
 
-3. Run the kahmy_bot.py file.
-4. Wait for someone to make a post to your forum and enjoy.
-5. The messages contain a link to the topic in question for easy access from the chat
+3. Check the category_id's so you can determine which message to send (toimari/hallitus)
+4. Run the kahmy_bot.py file.
+5. Wait for someone to make a post to your forum and enjoy.
+6. The messages contain a link to the topic in question for easy access from the chat
 
 Bot is developed using Python version 3.12 and needed packages for run the project are flask and requests.
 
