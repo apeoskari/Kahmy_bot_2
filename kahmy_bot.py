@@ -35,6 +35,7 @@ def send_message_to_telegram(text, chat_ids):
             'chat_id': chat_id,
             'text': text,
             'parse_mode': 'HTML',
+            'disable_web_page_preview': True
         }
         response = requests.post(url, data=payload)
         if response.status_code == 200:
