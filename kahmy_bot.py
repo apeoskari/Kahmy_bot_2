@@ -50,18 +50,19 @@ def send_message_to_telegram(text, chat_ids):
 @app.route("/kahmybot_webhook", methods=["POST"])
 def discourse_webhook():
     data = request.json
+    print(data)
     message = ""
 
     # Check if the webhook is for a new topic or post
     if "topic" in data:
         # New topic created
         # Get the topic name and the creators name.
-        topic_title = data["topic"]["title"]
+        topic_title = data["topic"]["slug"]
         name = data["topic"]["created_by"]["name"]
 
         # format the title and add it to the url so that people can access the topic directly from chat.
         mod_title = str.lower(topic_title).replace(" ", "-")
-        url = f"{config.forum_url}t/{mod_title}/{data['topic']['id']}"
+        url = f"{config.forum_url}/t/{mod_title}/{data['topic']['id']}"
 
         # Specify whether the message is about toimari- or hallituskähmy and hide the url behind that word (HTML format)
         if data["topic"]["category_id"] == 6:
@@ -83,7 +84,7 @@ def discourse_webhook():
 
         # Again format an url to be added to the message
         mod_title = str.lower(title).replace(" ", "-")
-        url = f"{config.forum_url}t/{mod_title}/{data['post']['topic_id']}"
+        url = f"{config.forum_url}/t/{mod_title}/{data['post']['topic_id']}"
         in_text_url = f"<a href='{url}'>kommentti</a>"
 
         # Add everything of importance to the message: url, title, sender name.
