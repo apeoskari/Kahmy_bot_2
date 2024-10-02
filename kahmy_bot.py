@@ -60,9 +60,8 @@ def discourse_webhook():
         topic_title = data["topic"]["slug"]
         name = data["topic"]["created_by"]["name"]
 
-        # format the title and add it to the url so that people can access the topic directly from chat.
-        mod_title = str.lower(topic_title).replace(" ", "-")
-        url = f"{config.forum_url}/t/{mod_title}/{data['topic']['id']}"
+        # create a working url so that users can conviniently access the post
+        url = f"{config.forum_url}/t/{data['slug']}/{data['topic']['id']}"
 
         # Specify whether the message is about toimari- or hallituskähmy and hide the url behind that word (HTML format)
         if data["topic"]["category_id"] == 6:
