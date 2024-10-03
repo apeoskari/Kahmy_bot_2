@@ -61,9 +61,11 @@ def discourse_webhook():
         TOIMARI_KAHMY_SLUG,
     ):
         payload = data["post"]
+        print(payload["category_slug"])
     else:
         return jsonify({"status": "ok"}), 200
 
+    print(payload["category_slug"])
     # Gather all necessary data
     topic_slug = payload["topic_slug"]
     topic_title = payload["topic_title"]
@@ -76,7 +78,7 @@ def discourse_webhook():
 
     message = ""
     # when post_number == 1 the post is the original post
-    match (post_number, category_slug):
+    match post_number, category_slug:
         case (1, HALLITUS_KAHMY_SLUG):
             embedded_url = f"<a href='{url}'>hallituskähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
