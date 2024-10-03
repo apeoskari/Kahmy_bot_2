@@ -50,16 +50,15 @@ def send_message_to_telegram(text, chat_ids):
 def discourse_webhook():
     """Flask route to handle Discourse webhook POST requests"""
     data = request.json
-    message = ""
     payload = {}
 
-    HALLITUS_KAHMY_ID = 5
-    TOIMARI_KAHMY_ID = 6
+    HALLITUS_KAHMY_SLUG = "hallitus-kahmyt"
+    TOIMARI_KAHMY_SLUG = "toimarikahmyt"
 
     # Payload
-    if "post" in data and data["post"]["category_id"] in (
-        HALLITUS_KAHMY_ID,
-        TOIMARI_KAHMY_ID,
+    if "post" in data and data["post"]["category_slug"] in (
+        HALLITUS_KAHMY_SLUG,
+        TOIMARI_KAHMY_SLUG,
     ):
         payload = data["post"]
     else:
@@ -71,17 +70,17 @@ def discourse_webhook():
     user_fullname = payload["name"]
     topic_id = payload["topic_id"]
     post_number = payload["post_number"]
-    category_id = payload["category_id"]
+    category_slug = payload["category_slug"]
 
     url = f"{config.forum_url}/t/{topic_slug}/{topic_id}/{post_number}"
 
+    message = ""
     # when post_number == 1 the post is the original post
-
-    match (post_number, category_id):
-        case (1, HALLITUS_KAHMY_ID):
+    match (post_number, category_slug):
+        case (1, HALLITUS_KAHMY_SLUG):
             embedded_url = f"<a href='{url}'>hallituskähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
-        case (1, TOIMARI_KAHMY_ID):
+        case (1, TOIMARI_KAHMY_SLUG):
             embedded_url = f"<a href='{url}'>toimarikähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
         case (post_number, _) if post_number > 1:
