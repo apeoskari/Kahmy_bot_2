@@ -67,7 +67,7 @@ def discourse_webhook():
 
     # Gather all necessary data
     topic_slug = payload["topic_slug"]
-    topic_title = payload["topic_tile"]
+    topic_title = payload["topic_title"]
     user_fullname = payload["name"]
     topic_id = payload["topic_id"]
     post_number = payload["post_number"]
