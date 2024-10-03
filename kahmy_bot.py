@@ -79,13 +79,13 @@ def discourse_webhook():
 
     match (post_number, category_id):
         case (1, HALLITUS_KAHMY_ID):
-            embedded_url = f"<a href={url}>hallituskähmy</a>"
+            embedded_url = f"<a href='{url}'>hallituskähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
         case (1, TOIMARI_KAHMY_ID):
-            embedded_url = f"<a href={url}>toimarikähmy</a>"
+            embedded_url = f"<a href='{url}'>toimarikähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
         case (post_number, _) if post_number > 1:
-            embedded_url = f"<a href={url}>kommentti</a>"
+            embedded_url = f"<a href='{url}'>kommentti</a>"
             message = f"Uusi {embedded_url} kähmyyn:\n{topic_title}\nhenkilöltä <b>{user_fullname}</b>"
 
     send_message_to_telegram(message, config.group_ids)
