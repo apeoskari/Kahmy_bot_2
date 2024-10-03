@@ -46,49 +46,49 @@ def send_message_to_telegram(text, chat_ids):
             )
 
 
-# Flask route to handle Discourse webhook POST requests
 @app.route("/kahmybot_webhook", methods=["POST"])
 def discourse_webhook():
+    """Flask route to handle Discourse webhook POST requests"""
     data = request.json
-    print(data)
     message = ""
+    payload = {}
 
-    # Check if the webhook is for a new topic or post
-    if "topic" in data:
-        # New topic created
-        # Get the topic name and the creators name.
-        topic_title = data["topic"]["slug"]
-        name = data["topic"]["created_by"]["name"]
+    HALLITUS_KAHMY_ID = 5
+    TOIMARI_KAHMY_ID = 6
 
-        # create a working url so that users can conviniently access the post
-        url = f"{config.forum_url}/t/{data['slug']}/{data['topic']['id']}"
+    # Payload
+    if "post" in data and data["post"]["category_id"] in (
+        HALLITUS_KAHMY_ID,
+        TOIMARI_KAHMY_ID,
+    ):
+        payload = data["post"]
+    else:
+        return jsonify({"status": "ok"}), 200
 
-        # Specify whether the message is about toimari- or hallituskähmy and hide the url behind that word (HTML format)
-        if data["topic"]["category_id"] == 6:
-            in_text_url = f"<a href='{url}'>toimarikähmy</a>"
-            message = f"Uusi {in_text_url} henkilöltä\n<b>{name}</b>:\n{topic_title}"
+    # Gather all necessary data
+    topic_slug = payload["topic_slug"]
+    topic_title = payload["topic_tile"]
+    user_fullname = payload["name"]
+    topic_id = payload["topic_id"]
+    post_number = payload["post_number"]
+    category_id = payload["category_id"]
 
-        if data["topic"]["category_id"] == 5:
-            in_text_url = f"<a href='{url}'>hallituskähmy</a>"
-            message = f"Uusi {in_text_url} henkilöltä\n<b>{name}</b>:\n{topic_title}"
+    url = f"{config.forum_url}/t/{topic_slug}/{topic_id}/{post_number}"
 
-        send_message_to_telegram(message, config.group_ids)
+    # when post_number == 1 the post is the original post
 
-    # Check whether a post is an answer to an already existing topic.
-    elif "post" in data and data["post"]["post_number"] > 1:
-        # New post created
-        # Get the topic title and name of the person reacting to it.
-        title = data["post"]["topic_slug"]
-        name = data["post"]["name"]
+    match (post_number, category_id):
+        case (1, HALLITUS_KAHMY_ID):
+            embedded_url = f"<a href={url}>hallituskähmy</a>"
+            message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
+        case (1, TOIMARI_KAHMY_ID):
+            embedded_url = f"<a href={url}>toimarikähmy</a>"
+            message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
+        case (post_number, _) if post_number > 1:
+            embedded_url = f"<a href={url}>kommentti</a>"
+            message = f"Uusi {embedded_url} kähmyyn:\n{topic_title}\nhenkilöltä <b>{user_fullname}</b>"
 
-        # Again format an url to be added to the message
-        mod_title = str.lower(title).replace(" ", "-")
-        url = f"{config.forum_url}/t/{mod_title}/{data['post']['topic_id']}"
-        in_text_url = f"<a href='{url}'>kommentti</a>"
-
-        # Add everything of importance to the message: url, title, sender name.
-        message = f"Uusi {in_text_url} kähmyyn:\n{title}\nhenkilöltä <b>{name}</b>"
-        send_message_to_telegram(message, config.group_ids)
+    send_message_to_telegram(message, config.group_ids)
 
     return jsonify({"status": "ok"}), 200
 
