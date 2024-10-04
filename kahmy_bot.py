@@ -78,14 +78,15 @@ def discourse_webhook():
 
     message = ""
     # when post_number == 1 the post is the original post
-    match post_number, category_slug:
-        case 1, HALLITUS_KAHMY_SLUG:
+    post = (post_number, category_slug)
+    match post:
+        case (1, HALLITUS_KAHMY_SLUG):
             embedded_url = f"<a href='{url}'>hallituskähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
-        case 1, TOIMARI_KAHMY_SLUG:
+        case (1, TOIMARI_KAHMY_SLUG):
             embedded_url = f"<a href='{url}'>toimarikähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
-        case post_number, _ if post_number > 1:
+        case (post_number, _) if post_number > 1:
             embedded_url = f"<a href='{url}'>kommentti</a>"
             message = f"Uusi {embedded_url} kähmyyn:\n{topic_title}\nhenkilöltä <b>{user_fullname}</b>"
 
