@@ -22,12 +22,14 @@ from enum import Enum
 
 import config
 
+
 class KAHMY_ID(Enum):
     HALLITUS = 5
     TOIMARI = 6
 
 
 app = Flask(__name__)
+
 
 def send_message_to_telegram(text, chat_ids):
     """
@@ -79,7 +81,7 @@ def discourse_webhook():
 
     message = ""
     # when post_number == 1 the post is the original post
-    match (post_number, category_id():
+    match (post_number, category_id):
         case (1, KAHMY_ID.HALLITUS):
             embedded_url = f"<a href='{url}'>hallituskähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
