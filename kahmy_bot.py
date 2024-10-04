@@ -18,10 +18,16 @@ TG: @apeoskari
 from flask import Flask, request, jsonify
 import requests
 
+from enum import Enum
+
 import config
 
-app = Flask(__name__)
+class KAHMY_ID(Enum):
+    HALLITUS = 5
+    TOIMARI = 6
 
+
+app = Flask(__name__)
 
 def send_message_to_telegram(text, chat_ids):
     """
@@ -52,38 +58,32 @@ def discourse_webhook():
     data = request.json
     payload = {}
 
-    HALLITUS_KAHMY_SLUG = "hallitus-kahmyt"
-    TOIMARI_KAHMY_SLUG = "toimarikahmyt"
-
     # Payload
-    if "post" in data and data["post"]["category_slug"] in (
-        HALLITUS_KAHMY_SLUG,
-        TOIMARI_KAHMY_SLUG,
+    if "post" in data and data["post"]["category_id"] in (
+        KAHMY_ID.HALLITUS,
+        KAHMY_ID.TOIMARI,
     ):
         payload = data["post"]
-        print(payload["category_slug"])
     else:
         return jsonify({"status": "ok"}), 200
 
-    print(payload["category_slug"])
     # Gather all necessary data
     topic_slug = payload["topic_slug"]
     topic_title = payload["topic_title"]
     user_fullname = payload["name"]
     topic_id = payload["topic_id"]
     post_number = payload["post_number"]
-    category_slug = payload["category_slug"]
+    category_id = payload["category_id"]
 
     url = f"{config.forum_url}/t/{topic_slug}/{topic_id}/{post_number}"
 
     message = ""
     # when post_number == 1 the post is the original post
-    post = (post_number, category_slug)
-    match post:
-        case (1, HALLITUS_KAHMY_SLUG):
+    match (post_number, category_id():
+        case (1, KAHMY_ID.HALLITUS):
             embedded_url = f"<a href='{url}'>hallituskähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
-        case (1, TOIMARI_KAHMY_SLUG):
+        case (1, KAHMY_ID.TOIMARI):
             embedded_url = f"<a href='{url}'>toimarikähmy</a>"
             message = f"Uusi {embedded_url} henkilöltä\n<b>{user_fullname}</b>:\n{topic_title}"
         case (post_number, _) if post_number > 1:
