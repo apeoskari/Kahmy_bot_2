@@ -18,12 +18,12 @@ TG: @apeoskari
 from flask import Flask, request, jsonify
 import requests
 
-from enum import Enum
+from enum import IntEnum
 
 import config
 
 
-class KAHMY_ID(Enum):
+class KAHMY_ID(IntEnum):
     HALLITUS = 5
     TOIMARI = 6
 
@@ -61,6 +61,7 @@ def discourse_webhook():
     payload = {}
 
     # Payload
+
     if "post" in data and data["post"]["category_id"] in (
         KAHMY_ID.HALLITUS,
         KAHMY_ID.TOIMARI,
